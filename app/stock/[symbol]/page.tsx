@@ -1,19 +1,21 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { getStockBySymbol, analyzeStock } from '../data/stockData';
-import StockChart from '../components/StockChart';
-import AnalysisCard from '../components/AnalysisCard';
-import { useWatchlist } from '../components/Watchlist';
+﻿'use client';
+
+import { useParams, useRouter } from 'next/navigation';
+import { getStockBySymbol, analyzeStock } from '../../../src/data/stockData';
+import StockChart from '../../../src/components/StockChart';
+import AnalysisCard from '../../../src/components/AnalysisCard';
+import { useWatchlist } from '../../../src/components/Watchlist';
 
 export default function StockDetailPage() {
   const { symbol } = useParams<{ symbol: string }>();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { isInWatchlist, add, remove } = useWatchlist();
 
   if (!symbol) {
     return (
       <div className="error-page">
         <h2>Nie znaleziono spółki</h2>
-        <button onClick={() => navigate('/')}>Wróć do strony głównej</button>
+        <button onClick={() => router.push('/')}>Wróć do strony głównej</button>
       </div>
     );
   }
@@ -24,7 +26,7 @@ export default function StockDetailPage() {
       <div className="error-page">
         <h2>Nie znaleziono spółki {symbol}</h2>
         <p>Sprawdź, czy symbol jest poprawny.</p>
-        <button onClick={() => navigate('/')}>Wróć do strony głównej</button>
+        <button onClick={() => router.push('/')}>Wróć do strony głównej</button>
       </div>
     );
   }
@@ -37,7 +39,7 @@ export default function StockDetailPage() {
   return (
     <div className="detail-page">
       <header className="detail-header">
-        <button className="back-btn" onClick={() => navigate('/')}>
+        <button className="back-btn" onClick={() => router.push('/')}>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>

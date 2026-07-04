@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+﻿'use client';
+
+import { useRouter } from 'next/navigation';
 import type { Stock } from '../types';
 
 interface Props {
@@ -7,11 +9,11 @@ interface Props {
 }
 
 export default function StockCard({ stock, onRemove }: Props) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const isPositive = stock.change >= 0;
 
   return (
-    <div className="stock-card" onClick={() => navigate(`/stock/${stock.symbol}`)}>
+    <div className="stock-card" onClick={() => router.push(`/stock/${stock.symbol}`)}>
       <div className="stock-card-header">
         <div>
           <h3>{stock.symbol}</h3>

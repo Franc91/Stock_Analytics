@@ -1,5 +1,7 @@
+﻿'use client';
+
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { searchStocks } from '../data/stockData';
 import type { Stock } from '../types';
 
@@ -7,7 +9,7 @@ export default function StockSearch() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Stock[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function StockSearch() {
   const handleSelect = (symbol: string) => {
     setQuery('');
     setShowDropdown(false);
-    navigate(`/stock/${symbol}`);
+    router.push(`/stock/${symbol}`);
   };
 
   return (

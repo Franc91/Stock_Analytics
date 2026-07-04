@@ -1,5 +1,7 @@
-import StockSearch from '../components/StockSearch';
-import WatchlistPanel, { useWatchlist } from '../components/Watchlist';
+﻿'use client';
+
+import StockSearch from '../src/components/StockSearch';
+import WatchlistPanel, { useWatchlist } from '../src/components/Watchlist';
 
 export default function HomePage() {
   const { watchlist, remove } = useWatchlist();
