@@ -1,6 +1,7 @@
 'use client';
 
 import StockSearch from '../src/components/StockSearch';
+import CurrencySelector from '../src/components/CurrencySelector';
 import WatchlistPanel, { useWatchlist } from '../src/components/Watchlist';
 
 export default function HomePage() {
@@ -22,15 +23,18 @@ export default function HomePage() {
                 <p className="subtitle">Inteligentna analiza techniczna i rekomendacje inwestycyjne</p>
               </div>
             </div>
-            <div className="header-stats">
-              <div className="stat">
-                <span className="stat-value">20</span>
-                <span className="stat-label">Obserwowane spółki</span>
+            <div className="header-top-right">
+              <div className="header-stats">
+                <div className="stat">
+                  <span className="stat-value">20</span>
+                  <span className="stat-label">Obserwowane spółki</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-value">Technologia</span>
+                  <span className="stat-label">Najliczniejszy sektor</span>
+                </div>
               </div>
-              <div className="stat">
-                <span className="stat-value">Technologia</span>
-                <span className="stat-label">Najliczniejszy sektor</span>
-              </div>
+              <CurrencySelector />
             </div>
           </div>
           <StockSearch />

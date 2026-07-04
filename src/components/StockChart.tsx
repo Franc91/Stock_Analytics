@@ -9,6 +9,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
+import { useCurrency } from './CurrencyProvider';
 import type { Stock } from '../types';
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function StockChart({ stock }: Props) {
+  const { formatPrice } = useCurrency();
   const isPositive = stock.change >= 0;
   const color = isPositive ? '#22c55e' : '#ef4444';
 
@@ -40,7 +42,7 @@ export default function StockChart({ stock }: Props) {
             domain={['auto', 'auto']}
             stroke="#718096"
             tick={{ fontSize: 12 }}
-            tickFormatter={(v) => `$${v}`}
+            tickFormatter={(v) => formatPrice(v, 0)}
           />
           <Tooltip
             contentStyle={{
@@ -49,7 +51,7 @@ export default function StockChart({ stock }: Props) {
               borderRadius: '8px',
               color: '#e2e8f0',
             }}
-            formatter={(value: any) => [`$${Number(value).toFixed(2)}`, 'Cena']}
+            formatter={(value: any) => [formatPrice(Number(value)), 'Cena']}
           />
           <Area
             type="monotone"

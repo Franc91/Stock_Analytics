@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import '../src/index.css'
 import '../src/App.css'
+import Providers from '../src/components/Providers'
 
 export const metadata: Metadata = {
   title: 'Analizator Akcji',
@@ -14,7 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pl">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   )
 }

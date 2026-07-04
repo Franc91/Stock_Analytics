@@ -3,18 +3,24 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { analyzeStock } from '../../../src/data/stockData';
+import { analyzeTraderSentiment } from '../../../src/data/traderAnalysis';
 import { fetchQuote, fetchHistory } from '../../../src/lib/stockApi';
 import StockChart from '../../../src/components/StockChart';
 import AnalysisCard from '../../../src/components/AnalysisCard';
+import TraderSentimentCard from '../../../src/components/TraderSentimentCard';
+import CurrencySelector from '../../../src/components/CurrencySelector';
+import { useCurrency } from '../../../src/components/CurrencyProvider';
 import { useWatchlist } from '../../../src/components/Watchlist';
-import type { Stock, AnalysisResult } from '../../../src/types';
+import type { Stock, AnalysisResult, TraderSentiment } from '../../../src/types';
 
 export default function StockDetailPage() {
   const { symbol } = useParams<{ symbol: string }>();
   const router = useRouter();
   const { isInWatchlist, add, remove } = useWatchlist();
+  const { formatPrice, formatChange } = useCurrency();
   const [stock, setStock] = useState<Stock | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [traderSentiment, setTraderSentiment] = useState<TraderSentiment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -44,6 +50,7 @@ export default function StockDetailPage() {
 
       setStock(fullStock);
       setAnalysis(analyzeStock(fullStock));
+      setTraderSentiment(analyzeTraderSentiment(symbol));
       setLoading(false);
     }).catch(() => {
       if (!cancelled) {
@@ -82,12 +89,15 @@ export default function StockDetailPage() {
   return (
     <div className="detail-page">
       <header className="detail-header">
-        <button className="back-btn" onClick={() => router.push('/')}>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Powrót
-        </button>
+        <div className="detail-header-top">
+          <button className="back-btn" onClick={() => router.push('/')}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Powrót
+          </button>
+          <CurrencySelector />
+        </div>
 
         <div className="detail-title-section">
           <div className="detail-title-left">
@@ -97,9 +107,9 @@ export default function StockDetailPage() {
           </div>
           <div className="detail-title-right">
             <div className="detail-price-section">
-              <span className="detail-price">${stock.price.toFixed(2)}</span>
+              <span className="detail-price">{formatPrice(stock.price)}</span>
               <span className={`detail-change ${isPositive ? 'positive' : 'negative'}`}>
-                {isPositive ? '+' : ''}{stock.change.toFixed(2)} ({isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%)
+                {formatChange(stock.change)} ({isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%)
               </span>
             </div>
             <button
@@ -123,6 +133,9 @@ export default function StockDetailPage() {
           </div>
           <div className="detail-analysis-section">
             <AnalysisCard analysis={analysis} />
+            {traderSentiment && (
+              <TraderSentimentCard sentiment={traderSentiment} />
+            )}
           </div>
         </div>
       </main>

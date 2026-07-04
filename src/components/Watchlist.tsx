@@ -42,7 +42,6 @@ export function useWatchlist() {
 
 export default function WatchlistPanel({ watchlist, onRemove }: { watchlist: string[]; onRemove: (s: string) => void }) {
   const [stockList, setStockList] = useState<Stock[]>([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (watchlist.length === 0) {
@@ -51,12 +50,10 @@ export default function WatchlistPanel({ watchlist, onRemove }: { watchlist: str
     }
 
     let cancelled = false;
-    setLoading(true);
 
     fetchQuotesForWatchlist(watchlist).then((results) => {
       if (!cancelled) {
         setStockList(results);
-        setLoading(false);
       }
     });
 

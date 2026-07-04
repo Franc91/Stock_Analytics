@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useCurrency } from './CurrencyProvider';
 import type { Stock } from '../types';
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 
 export default function StockCard({ stock, onRemove }: Props) {
   const router = useRouter();
+  const { formatPrice, formatChange } = useCurrency();
   const isPositive = stock.change >= 0;
 
   return (
@@ -33,12 +35,12 @@ export default function StockCard({ stock, onRemove }: Props) {
         <span className="stock-fullname">{stock.name}</span>
       </div>
       <div className="stock-card-footer">
-        <span className="stock-price">${stock.price.toFixed(2)}</span>
+        <span className="stock-price">{formatPrice(stock.price)}</span>
         <span className={`stock-change ${isPositive ? 'positive' : 'negative'}`}>
           <svg viewBox="0 0 10 10" width="10" height="10">
             <path d={isPositive ? 'M5 1L9 9H1z' : 'M5 9L1 1h8z'} fill="currentColor" />
           </svg>
-          {isPositive ? '+' : ''}{stock.change.toFixed(2)} ({isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%)
+          {formatChange(stock.change)} ({isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%)
         </span>
       </div>
     </div>
