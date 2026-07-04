@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { searchStocks } from '../data/stockData';
+import { searchStocks } from '../lib/stockApi';
 import type { Stock } from '../types';
 
 export default function StockSearch() {
@@ -22,16 +22,21 @@ export default function StockSearch() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleChange = (value: string) => {
-    setQuery(value);
-    if (value.length >= 1) {
-      setResults(searchStocks(value));
-      setShowDropdown(true);
-    } else {
+  useEffect(() => {
+    if (query.length < 1) {
       setResults([]);
       setShowDropdown(false);
+      return;
     }
-  };
+
+    const timer = setTimeout(async () => {
+      const res = await searchStocks(query);
+      setResults(res);
+      setShowDropdown(res.length > 0);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const handleSelect = (symbol: string) => {
     setQuery('');
@@ -50,7 +55,7 @@ export default function StockSearch() {
           type="text"
           placeholder="Wyszukaj spółkę (np. Apple, MSFT, Tesla)..."
           value={query}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
           onFocus={() => { if (results.length > 0) setShowDropdown(true); }}
         />
       </div>
@@ -63,10 +68,7 @@ export default function StockSearch() {
                 <span className="result-name">{stock.name}</span>
               </div>
               <div className="result-right">
-                <span className="result-price">${stock.price.toFixed(2)}</span>
-                <span className={`result-change ${stock.change >= 0 ? 'positive' : 'negative'}`}>
-                  {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                </span>
+                <span className="result-sector">{stock.sector}</span>
               </div>
             </li>
           ))}

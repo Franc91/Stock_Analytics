@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getStockBySymbol } from '../data/stockData';
+import { fetchQuotesForWatchlist } from '../lib/stockApi';
 import StockCard from './StockCard';
 import type { Stock } from '../types';
 
@@ -41,9 +41,27 @@ export function useWatchlist() {
 }
 
 export default function WatchlistPanel({ watchlist, onRemove }: { watchlist: string[]; onRemove: (s: string) => void }) {
-  const stockList: Stock[] = watchlist
-    .map((s) => getStockBySymbol(s))
-    .filter((s): s is Stock => s !== undefined);
+  const [stockList, setStockList] = useState<Stock[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (watchlist.length === 0) {
+      setStockList([]);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+
+    fetchQuotesForWatchlist(watchlist).then((results) => {
+      if (!cancelled) {
+        setStockList(results);
+        setLoading(false);
+      }
+    });
+
+    return () => { cancelled = true; };
+  }, [watchlist]);
 
   if (stockList.length === 0) {
     return (

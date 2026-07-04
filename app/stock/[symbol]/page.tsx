@@ -1,39 +1,82 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getStockBySymbol, analyzeStock } from '../../../src/data/stockData';
+import { analyzeStock } from '../../../src/data/stockData';
+import { fetchQuote, fetchHistory } from '../../../src/lib/stockApi';
 import StockChart from '../../../src/components/StockChart';
 import AnalysisCard from '../../../src/components/AnalysisCard';
 import { useWatchlist } from '../../../src/components/Watchlist';
+import type { Stock, AnalysisResult } from '../../../src/types';
 
 export default function StockDetailPage() {
   const { symbol } = useParams<{ symbol: string }>();
   const router = useRouter();
   const { isInWatchlist, add, remove } = useWatchlist();
+  const [stock, setStock] = useState<Stock | null>(null);
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  if (!symbol) {
+  useEffect(() => {
+    if (!symbol) return;
+
+    let cancelled = false;
+    setLoading(true);
+    setError('');
+
+    Promise.all([
+      fetchQuote(symbol),
+      fetchHistory(symbol),
+    ]).then(([quote, history]) => {
+      if (cancelled) return;
+
+      if (!quote) {
+        setError(`Nie znaleziono spółki ${symbol}`);
+        setLoading(false);
+        return;
+      }
+
+      const fullStock: Stock = {
+        ...quote,
+        history: history.length > 0 ? history : [],
+      };
+
+      setStock(fullStock);
+      setAnalysis(analyzeStock(fullStock));
+      setLoading(false);
+    }).catch(() => {
+      if (!cancelled) {
+        setError('Nie udało się pobrać danych. Spróbuj ponownie.');
+        setLoading(false);
+      }
+    });
+
+    return () => { cancelled = true; };
+  }, [symbol]);
+
+  if (!symbol || error) {
     return (
       <div className="error-page">
-        <h2>Nie znaleziono spółki</h2>
+        <h2>{error || 'Nie znaleziono spółki'}</h2>
+        <p>{!error && 'Sprawdź, czy symbol jest poprawny.'}</p>
         <button onClick={() => router.push('/')}>Wróć do strony głównej</button>
       </div>
     );
   }
 
-  const stock = getStockBySymbol(symbol);
-  if (!stock) {
+  if (loading || !stock || !analysis) {
     return (
-      <div className="error-page">
-        <h2>Nie znaleziono spółki {symbol}</h2>
-        <p>Sprawdź, czy symbol jest poprawny.</p>
-        <button onClick={() => router.push('/')}>Wróć do strony głównej</button>
+      <div className="detail-page">
+        <div className="loading-page">
+          <div className="loading-spinner" />
+          <p>Ładowanie danych dla {symbol}...</p>
+        </div>
       </div>
     );
   }
 
-  const analysis = analyzeStock(symbol);
   const watched = isInWatchlist(symbol);
-
   const isPositive = stock.change >= 0;
 
   return (
@@ -50,7 +93,7 @@ export default function StockDetailPage() {
           <div className="detail-title-left">
             <h1>{stock.symbol}</h1>
             <span className="detail-name">{stock.name}</span>
-            <span className="detail-sector">{stock.sector}</span>
+            {stock.sector && <span className="detail-sector">{stock.sector}</span>}
           </div>
           <div className="detail-title-right">
             <div className="detail-price-section">
