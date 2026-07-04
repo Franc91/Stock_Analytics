@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useParams, useRouter } from 'next/navigation';
 import { getStockBySymbol, analyzeStock } from '../../../src/data/stockData';

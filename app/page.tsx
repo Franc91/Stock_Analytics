@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import StockSearch from '../src/components/StockSearch';
 import WatchlistPanel, { useWatchlist } from '../src/components/Watchlist';

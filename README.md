@@ -1,4 +1,4 @@
-﻿# 📈 Analizator Akcji
+# 📈 Analizator Akcji
 
 Aplikacja webowa do analizy technicznej akcji wybranych spółek z rekomendacjami **Kupuj / Sprzedaj / Trzymaj**.
 

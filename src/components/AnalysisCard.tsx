@@ -1,4 +1,4 @@
-﻿import type { AnalysisResult } from '../types';
+import type { AnalysisResult } from '../types';
 
 interface Props {
   analysis: AnalysisResult;

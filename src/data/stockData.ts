@@ -1,4 +1,4 @@
-﻿import type { Stock, AnalysisResult } from '../types';
+import type { Stock, AnalysisResult } from '../types';
 
 function generateHistory(basePrice: number, volatility: number, days: number = 30) {
   const history: { date: string; price: number }[] = [];
