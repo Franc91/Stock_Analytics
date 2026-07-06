@@ -35,3 +35,7 @@ out
 
 
 .agents/*
+
+# Environment variables (API keys)
+.env
+.env.production

@@ -29,10 +29,7 @@ export default function StockDetailPage() {
     setLoading(true);
     setError('');
 
-    Promise.all([
-      fetchQuote(symbol),
-      fetchHistory(symbol),
-    ]).then(([quote, history]) => {
+    fetchQuote(symbol).then((quote) => {
       if (cancelled) return;
 
       if (!quote) {
@@ -41,15 +38,20 @@ export default function StockDetailPage() {
         return;
       }
 
-      const fullStock: Stock = {
-        ...quote,
-        history: history.length > 0 ? history : [],
-      };
+      // Pobierz historię (przekazując aktualną cenę jako fallback)
+      fetchHistory(symbol, quote.price).then((history) => {
+        if (cancelled) return;
 
-      setStock(fullStock);
-      setAnalysis(analyzeStock(fullStock));
-      setTraderSentiment(analyzeTraderSentiment(symbol));
-      setLoading(false);
+        const fullStock: Stock = {
+          ...quote,
+          history: history.length > 0 ? history : [],
+        };
+
+        setStock(fullStock);
+        setAnalysis(analyzeStock(fullStock));
+        setTraderSentiment(analyzeTraderSentiment(symbol));
+        setLoading(false);
+      });
     }).catch(() => {
       if (!cancelled) {
         setError('Nie udało się pobrać danych. Spróbuj ponownie.');

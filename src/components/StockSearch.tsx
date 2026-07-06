@@ -7,6 +7,7 @@ export default function StockSearch() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Stock[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -23,14 +24,16 @@ export default function StockSearch() {
   useEffect(() => {
     if (query.length < 1) {
       setResults([]);
+      setError('');
       setShowDropdown(false);
       return;
     }
 
     const timer = setTimeout(async () => {
-      const res = await searchStocks(query);
-      setResults(res);
-      setShowDropdown(res.length > 0);
+      const { stocks, error: err } = await searchStocks(query);
+      setResults(stocks);
+      setError(err || '');
+      setShowDropdown(stocks.length > 0);
     }, 300);
 
     return () => clearTimeout(timer);
@@ -57,7 +60,10 @@ export default function StockSearch() {
           onFocus={() => { if (results.length > 0) setShowDropdown(true); }}
         />
       </div>
-      {showDropdown && results.length > 0 && (
+      {error && (
+        <div className="search-error">{error}</div>
+      )}
+      {!error && showDropdown && results.length > 0 && (
         <ul className="search-results">
           {results.map((stock) => (
             <li key={stock.symbol} onClick={() => handleSelect(stock.symbol)}>
