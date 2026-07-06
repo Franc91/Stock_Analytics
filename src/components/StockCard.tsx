@@ -1,6 +1,4 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { useCurrency } from './CurrencyProvider';
 import type { Stock } from '../types';
 
@@ -10,12 +8,12 @@ interface Props {
 }
 
 export default function StockCard({ stock, onRemove }: Props) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { formatPrice, formatChange } = useCurrency();
   const isPositive = stock.change >= 0;
 
   return (
-    <div className="stock-card" onClick={() => router.push(`/stock/${stock.symbol}`)}>
+    <div className="stock-card" onClick={() => navigate(`/stock/${stock.symbol}`)}>
       <div className="stock-card-header">
         <div>
           <h3>{stock.symbol}</h3>
